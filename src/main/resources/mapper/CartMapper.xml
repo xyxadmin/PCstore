@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyx.mapper.CartMapper">
+   <insert id="insert" useGeneratedKeys="true" keyProperty="cid">
+       insert into t_cart (uid,pid,price,num,created_user,created_time,modified_user,modified_time)
+            values (#{uid},#{pid},#{price},#{num},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+   </insert>
+    <update id="updateNumByCid">
+        update t_cart
+        set num=#{num},
+            modified_user=#{modifiedUser},
+            modified_time=#{modifiedTime}
+        where cid=#{cid}
+    </update>
+    <select id="findByUidAndPid" resultType="cart">
+        select * from t_cart where uid=#{uid} and pid=#{pid}
+    </select>
+    <select id="showCartList" resultType="com.xyx.vo.CartVo">
+        select cid,uid,pid,c.price,c.num,p.title,p.image,p.price as realPrice
+        from t_cart c left join t_product p on c.pid=p.id
+        where uid=#{uid} order by c.created_time desc
+    </select>
+    <select id="findByCid" resultType="cart">
+        select * from t_cart where cid=#{cid}
+    </select>
+    <select id="showCartListByCid" resultType="com.xyx.vo.CartVo">
+        select cid,uid,pid,c.price,c.num,p.title,p.image,p.price as realPrice
+        from t_cart c left join t_product p on c.pid=p.id
+        where cid in (
+            <foreach collection="array" item="cid" separator=",">
+                #{cid}
+            </foreach>
+            ) order by c.created_time desc
+    </select>
+</mapper>
